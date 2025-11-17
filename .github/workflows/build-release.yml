@@ -38,8 +38,28 @@ jobs:
           pip install pyinstaller
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      # --------------------------------------------------
+      # Install UPX on all platforms
+      # --------------------------------------------------
+
+      - name: Install UPX (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y upx
+
+      - name: Install UPX (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          choco install upx --no-progress
+
+      - name: Install UPX (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          brew install upx
+
       # -------------------------------------------
-      # macOS .app (Universal2 binary)
+      # macOS .app (UPX auto-applied inside binary)
       # -------------------------------------------
       - name: Build macOS app bundle
         if: ${{ matrix.os == 'macos-latest' }}
@@ -50,7 +70,7 @@ jobs:
           mv dist/$APP_NAME.app dist/${APP_NAME}-macos.app
 
       # -------------------------------------------
-      # Windows .exe
+      # Windows .exe (UPX applied automatically)
       # -------------------------------------------
       - name: Build Windows executable
         if: ${{ matrix.os == 'windows-latest' }}
@@ -81,7 +101,7 @@ jobs:
           dpkg-deb --build deb
           mv deb.deb dist/${APP_NAME}-linux.deb
 
-      # Upload all artifacts
+      # Upload artifacts
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
