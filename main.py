@@ -1,4 +1,11 @@
-import time, pyautogui, random, difflib
+import time, random, difflib
+try:
+    import pyautogui
+except (ImportError, ModuleNotFoundError, Exception):
+    import os
+    os.system("pip install pyautogui")
+finally:
+    import pyautogui
 
 def is_done(word):
     return difflib.get_close_matches(word.lower(), ["done", "d"], n=1, cutoff=0.6)
